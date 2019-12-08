@@ -11,6 +11,7 @@ in `magento_project_dir/app/code/SY/Slider`
 
 (or simply download and unzip the repo)
 
+in `magento_project_dir`
 
 `bin/magento module:enable SY_Slider`
 
