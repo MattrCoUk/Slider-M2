@@ -17,7 +17,7 @@
       mode: 'vertical',
       slideSelector: '',
       infiniteLoop: false,
-      hideControlOnEnd: true,
+      hideControlOnEnd: false,
       speed: 500,
       easing: null,
       slideMargin: 0,
