@@ -34,8 +34,13 @@
   :php
     endforeach;
 
-    # inject styles typed-in Magento's back-end
-    echo $this->getOption('css');
+    if (!empty(trim($this->getOption('css')))) {
+  %style{:type=>'text/css'}
+    :php
+      # inject styles typed-in CMS
+      echo $this->getOption('css');
+  :php
+    }
     
 :php
   endif;
