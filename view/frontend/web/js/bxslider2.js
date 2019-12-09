@@ -13,11 +13,12 @@
     var defaults, plugin;
     plugin = {};
     defaults = {
+      
       // GENERAL
       mode: 'vertical',
       slideSelector: '',
-      infiniteLoop: false,
-      hideControlOnEnd: true,
+      infiniteLoop: true,
+      hideControlOnEnd: false,
       speed: 500,
       easing: null,
       slideMargin: 0,
@@ -34,12 +35,14 @@
       responsive: true,
       slideZIndex: 50,
       wrapperClass: 'bx-wrapper',
+      
       // TOUCH
       touchEnabled: true,
       swipeThreshold: 50,
       oneToOneTouch: true,
       preventDefaultSwipeX: true,
       preventDefaultSwipeY: false,
+      
       // PAGER
       pager: true,
       pagerType: 'full',
@@ -47,6 +50,7 @@
       pagerSelector: null,
       buildPager: null,
       pagerCustom: null,
+      
       // CONTROLS
       controls: true,
       nextText: 'Next',
@@ -58,6 +62,7 @@
       stopText: 'Stop',
       autoControlsCombine: false,
       autoControlsSelector: null,
+      
       // AUTO
       auto: false,
       pause: 4000,
@@ -66,6 +71,7 @@
       autoHover: false,
       autoDelay: 0,
       autoSlideForOnePage: false,
+      
       // CAROUSEL
       minSlides: 1,
       maxSlides: 1,
@@ -188,24 +194,19 @@
       // # #
       setup = function() {
         var preloadSelector, slidesShowing;
-        
         // wrap el in a wrapper
         el.wrap('<div class="' + slider.settings.wrapperClass + '"><div class="bx-viewport"></div></div>');
-        
         // store a namspace reference to .bx-viewport
         slider.viewport = el.parent();
-        
         // add a loading div to display while images are loading
         slider.loader = $('<div class="bx-loading" />');
         slider.viewport.prepend(slider.loader);
         // set el to a massive width, to hold any needed slides
-
         // also strip any margin and padding from el
         el.css({
           width: slider.settings.mode === 'horizontal' ? slider.children.length * 100 + 215 + '%' : 'auto',
           position: 'relative'
         });
-        
         // if using CSS, add the easing property
         if (slider.usingCSS && slider.settings.easing) {
           el.css('-' + slider.cssPrefix + '-transition-timing-function', slider.settings.easing);
@@ -213,7 +214,6 @@
           slider.settings.easing = 'swing';
         }
         slidesShowing = getNumberSlidesShowing();
-        
         // make modifications to the viewport (.bx-viewport)
         slider.viewport.css({
           width: '100%',
@@ -228,17 +228,14 @@
             margin: '0 auto 0px'
           });
         }
-        
         // apply css to all slider children
         slider.children.css({
           'float': slider.settings.mode === 'horizontal' ? 'left' : 'none',
           listStyle: 'none',
           position: 'relative'
         });
-        
         // apply the calculated width after the float is applied to prevent scrollbar interference
         slider.children.css('width', getSlideWidth());
-        
         // if slideMargin is supplied, add the css
         if (slider.settings.mode === 'horizontal' && slider.settings.slideMargin > 0) {
           slider.children.css('marginRight', slider.settings.slideMargin);
@@ -246,7 +243,6 @@
         if (slider.settings.mode === 'vertical' && slider.settings.slideMargin > 0) {
           slider.children.css('marginBottom', slider.settings.slideMargin);
         }
-        
         // if "fade" mode, add positioning and z-index CSS
         if (slider.settings.mode === 'fade') {
           slider.children.css({
@@ -260,23 +256,18 @@
             display: 'block'
           });
         }
-        
         // create an element to contain all slider controls (pager, start / stop, etc)
         slider.controls.el = $('<div class="bx-controls" />');
-        
         // if captions are requested, add them
         if (slider.settings.captions) {
           appendCaptions();
         }
-        
         // check if startSlide is last slide
         slider.active.last = slider.settings.startSlide === getPagerQty() - 1;
-        
         // if video is true, set up the fitVids plugin
         if (slider.settings.video) {
           el.fitVids();
         }
-        
         // set the default preload selector (visible)
         preloadSelector = slider.children.eq(slider.settings.startSlide);
         if (slider.settings.preloadImages === 'all') {
@@ -300,11 +291,9 @@
             slider.viewport.after(slider.controls.el);
           }
         } else {
-          
           // if ticker mode, do not allow a pager
           slider.settings.pager = false;
         }
-        
         // preload all images, then perform final DOM / CSS modifications that depend on images being loaded
         loadElements(preloadSelector, start);
       };
@@ -334,7 +323,6 @@
       // # #
       start = function() {
         var slice, sliceAppend, slicePrepend;
-        
         // if infinite loop, prepare additional slides
         if (slider.settings.infiniteLoop && slider.settings.mode !== 'fade' && !slider.settings.ticker) {
           slice = slider.settings.mode === 'vertical' ? slider.settings.minSlides : slider.settings.maxSlides;
@@ -342,44 +330,34 @@
           slicePrepend = slider.children.slice(-slice).clone().addClass('bx-clone');
           el.append(sliceAppend).prepend(slicePrepend);
         }
-        
         // remove the loading DOM element
         slider.loader.remove();
-        
         // set the left / top position of "el"
         setSlidePosition();
-        
         // if "vertical" mode, always use adaptiveHeight to prevent odd behavior
-        //         if slider.settings.mode == 'vertical'
-        //            slider.settings.adaptiveHeight = true
-
+        if (slider.settings.mode === 'vertical') {
+          slider.settings.adaptiveHeight = true;
+        }
         // set the viewport height
         slider.viewport.height(getViewportHeight());
-        
         // make sure everything is positioned just right (same as a window resize)
         el.redrawSlider();
-        
         // onSliderLoad callback
         slider.settings.onSliderLoad(slider.active.index);
-        
         // slider has been fully initialized
         slider.initialized = true;
-        
         // bind the resize call to the window
         if (slider.settings.responsive) {
           $(window).bind('resize', resizeWindow);
         }
-        
         // if auto is true and has more than 1 page, start the show
         if (slider.settings.auto && slider.settings.autoStart && (getPagerQty() > 1 || slider.settings.autoSlideForOnePage)) {
           initAuto();
         }
-        
         // if ticker is true, start the ticker
         if (slider.settings.ticker) {
           initTicker();
         }
-        
         // if pager is requested, make the appropriate pager link active
         if (slider.settings.pager) {
           updatePagerActive(slider.settings.startSlide);

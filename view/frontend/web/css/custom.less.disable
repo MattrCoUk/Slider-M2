@@ -35,3 +35,30 @@
 	padding: 10px;
 	margin: 0;
 }
+
+
+.bx-wrapper .bx-viewport {
+	border: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+
+/**
+* by MattrCoUk
+ */
+
+// reset html list elems
+.bx-wrapper {
+
+	ul, li {
+		
+		margin:0;
+		padding: 0;
+		display: block;
+		text-indent: unset;
+	}
+}
+
+//
