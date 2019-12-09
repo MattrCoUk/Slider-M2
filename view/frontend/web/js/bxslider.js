@@ -16,9 +16,9 @@
       // GENERAL
       mode: 'vertical',
       slideSelector: '',
-      infiniteLoop: false,
+      infiniteLoop: true,
       hideControlOnEnd: false,
-      speed: 500,
+      speed: 700,
       easing: null,
       slideMargin: 0,
       startSlide: 0,
