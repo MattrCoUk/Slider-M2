@@ -35,11 +35,11 @@
     endforeach;
 
     if (!empty(trim($this->getOption('css')))) {
-  %style{:type=>'text/css'}
-    :php
+%style{:type=>'text/css'}
+  :php
       # inject styles typed-in CMS
       echo $this->getOption('css');
-  :php
+:php
     }
     
 :php
