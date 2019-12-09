@@ -63,10 +63,10 @@ jQuery(document).ready ($) ->
 
 # AUTO
       auto:                      false
-      pause:                     4000
+      pause:                     8000
       autoStart:                 true
       autoDirection:             'next'
-      autoHover:                 false
+      autoHover:                 true
       autoDelay:                 0
       autoSlideForOnePage:       false
 
