@@ -1,0 +1,43 @@
+:php
+  if($this->getCollection()->count()>0):
+
+%ul.bxslider{'data-mage-init'=>'{"SY_Slider/js/slider":<?php echo $this->getOptionsJson(); ?>}'}
+  :php
+    foreach($this->getCollection() as $item):
+  %li{:class=>"bx-slide bx-slide-<?php echo $item->getData('id'); ?>"}
+    :php
+      if($item->getData('url')) echo '<a href=', $item->getData('url'), '>';
+
+    -#%img{:src=>"<?php echo $this->getBaseUrl().'/'.ltrim($item->getData('image'), '/'); ?>"}
+    .bx-slide-img{:style=>"background-image:url(<?php echo $this->getBaseUrl().'/'.ltrim($item->getData('image'), '/'); ?>)"}
+    :php
+      if($item->getData('url')) echo '</a>';
+
+      if($item->getData('title') || $item->getData('caption')):
+
+    .bx-caption
+      :php
+        if($item->getData('title')) {
+      .bx-slide-title
+        :php
+          echo $item->getData('title');
+      :php
+        }
+        if($item->getData('caption')) {
+      .bx-slide-title
+        :php
+          echo $item->getData('caption');
+      :php
+        }
+    :php
+      endif;
+  :php
+    endforeach;
+
+    # inject styles typed-in Magento's back-end
+    echo $this->getOption('css');
+    
+:php
+  endif;
+
+
