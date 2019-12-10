@@ -16,7 +16,7 @@
       // GENERAL
       mode: 'vertical',
       slideSelector: '',
-      infiniteLoop: true,
+      infiniteLoop: false,
       hideControlOnEnd: false,
       speed: 700,
       easing: null,
@@ -30,12 +30,12 @@
       adaptiveHeightSpeed: 500,
       video: false,
       useCSS: true,
-      preloadImages: 'visible',
+      preloadImages: 'hidden',
       responsive: true,
       slideZIndex: 50,
       wrapperClass: 'bx-wrapper',
       // TOUCH
-      touchEnabled: true,
+      touchEnabled: false,
       swipeThreshold: 50,
       oneToOneTouch: true,
       preventDefaultSwipeX: true,
@@ -48,7 +48,7 @@
       buildPager: null,
       pagerCustom: null,
       // CONTROLS
-      controls: true,
+      controls: false,
       nextText: 'Next',
       prevText: 'Prev',
       nextSelector: null,

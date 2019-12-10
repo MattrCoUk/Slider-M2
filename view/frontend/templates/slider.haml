@@ -9,7 +9,7 @@
       if($item->getData('url')) echo '<a href=', $item->getData('url'), '>';
 
     -#%img{:src=>"<?php echo $this->getBaseUrl().'/'.ltrim($item->getData('image'), '/'); ?>"}
-    .bx-slide-img{:style=>"background-image:url(<?php echo $this->getBaseUrl().'/'.ltrim($item->getData('image'), '/'); ?>)"}
+    .bx-slide-img{:style=>"background-image:url(<?php echo $this->getBaseUrl().'/'.ltrim($item->getData('image'), '/') ?>)"}
     :php
       if($item->getData('url')) echo '</a>';
 

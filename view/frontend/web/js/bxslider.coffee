@@ -15,7 +15,7 @@ jQuery(document).ready ($) ->
 # GENERAL
       mode:                      'vertical'
       slideSelector:             ''
-      infiniteLoop:              true
+      infiniteLoop:              false
       hideControlOnEnd:          false
       speed:                     700
       easing:                    null
@@ -29,13 +29,13 @@ jQuery(document).ready ($) ->
       adaptiveHeightSpeed:       500
       video:                     false
       useCSS:                    true
-      preloadImages:             'visible'
+      preloadImages:             'hidden'
       responsive:                true
       slideZIndex:               50
       wrapperClass:              'bx-wrapper'
 
 # TOUCH
-      touchEnabled:              true
+      touchEnabled:              false
       swipeThreshold:            50
       oneToOneTouch:             true
       preventDefaultSwipeX:      true
@@ -50,7 +50,7 @@ jQuery(document).ready ($) ->
       pagerCustom:               null
 
 # CONTROLS
-      controls:                  true
+      controls:                  false
       nextText:                  'Next'
       prevText:                  'Prev'
       nextSelector:              null
