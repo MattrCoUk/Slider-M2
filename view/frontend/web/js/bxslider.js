@@ -13,6 +13,10 @@
     var defaults, plugin;
     plugin = {};
     defaults = {
+      // Some settings are supplied via CMS
+
+      // DEFAULTS
+
       // GENERAL
       mode: 'vertical',
       slideSelector: '',
@@ -23,7 +27,7 @@
       slideMargin: 0,
       startSlide: 0,
       randomStart: false,
-      captions: false,
+      captions: true,
       ticker: false,
       tickerHover: false,
       adaptiveHeight: false,
@@ -48,7 +52,7 @@
       buildPager: null,
       pagerCustom: null,
       // CONTROLS
-      controls: false,
+      controls: true,
       nextText: 'Next',
       prevText: 'Prev',
       nextSelector: null,
@@ -116,10 +120,13 @@
       init = function() {
         // merge user-supplied options with the defaults
         slider.settings = $.extend({}, defaults, options);
+        
         // parse slideWidth setting
         slider.settings.slideWidth = parseInt(slider.settings.slideWidth);
+        
         // store the original children
         slider.children = el.children(slider.settings.slideSelector);
+        
         // check if actual number of slides is less than minSlides / maxSlides
         if (slider.children.length < slider.settings.minSlides) {
           slider.settings.minSlides = slider.children.length;
@@ -127,32 +134,42 @@
         if (slider.children.length < slider.settings.maxSlides) {
           slider.settings.maxSlides = slider.children.length;
         }
+        
         // if random start, set the startSlide setting to random number
         if (slider.settings.randomStart) {
           slider.settings.startSlide = Math.floor(Math.random() * slider.children.length);
         }
+        
         // store active slide information
         slider.active = {
           index: slider.settings.startSlide
         };
+        
         // store if the slider is in carousel mode (displaying / moving multiple slides)
         slider.carousel = slider.settings.minSlides > 1 || slider.settings.maxSlides > 1;
+        
         // if carousel, force preloadImages = 'all'
         if (slider.carousel) {
           slider.settings.preloadImages = 'all';
         }
+        
         // calculate the min / max width thresholds based on min / max number of slides
         // used to setup and update carousel slides dimensions
         slider.minThreshold = slider.settings.minSlides * slider.settings.slideWidth + (slider.settings.minSlides - 1) * slider.settings.slideMargin;
         slider.maxThreshold = slider.settings.maxSlides * slider.settings.slideWidth + (slider.settings.maxSlides - 1) * slider.settings.slideMargin;
+        
         // store the current state of the slider (if currently animating, working is true)
         slider.working = false;
+        
         // initialize the controls object
         slider.controls = {};
+        
         // initialize an auto interval
         slider.interval = null;
+        
         // determine which property to use for transitions
         slider.animProp = slider.settings.mode === 'vertical' ? 'top' : 'left';
+        
         // determine if hardware acceleration can be used
         slider.usingCSS = slider.settings.useCSS && slider.settings.mode !== 'fade' && (function() {
           var div, i, props;
@@ -170,15 +187,18 @@
           }
           return false;
         })();
+        
         // if vertical mode always make maxSlides and minSlides equal
         if (slider.settings.mode === 'vertical') {
           slider.settings.maxSlides = slider.settings.minSlides;
         }
+        
         // save original style data
         el.data('origStyle', el.attr('style'));
         el.children(slider.settings.slideSelector).each(function() {
           $(this).data('origStyle', $(this).attr('style'));
         });
+        
         // perform all DOM / CSS modifications
         setup();
       };
@@ -223,12 +243,11 @@
         slider.viewport.parent().css({
           maxWidth: getViewportMaxWidth()
         });
-        if (!slider.settings.pager) {
-          slider.viewport.parent().css({
-            margin: '0 auto 0px'
-          });
-        }
         
+        // make modification to the wrapper (.bx-wrapper) -- disabled here, set in CSS
+        // if !slider.settings.pager
+        //    slider.viewport.parent().css margin: '0 auto 0px'
+
         // apply css to all slider children
         slider.children.css({
           'float': slider.settings.mode === 'horizontal' ? 'left' : 'none',
@@ -559,8 +578,6 @@
       // Sets the slider's (el) left or top position
       // # #
       setSlidePosition = function() {
-        var position;
-        var position;
         var lastChild, lastShowingIndex, position;
         // if last slide, not infinite loop, and number of children is larger than specified maxSlides
         if (slider.children.length > slider.settings.maxSlides && slider.active.last && !slider.settings.infiniteLoop) {
@@ -698,20 +715,25 @@
       // # #
       appendPager = function() {
         if (!slider.settings.pagerCustom) {
+          
           // create the pager DOM element
           slider.pagerEl = $('<div class="bx-pager" />');
+          
           // if a pager selector was supplied, populate it with the pager
           if (slider.settings.pagerSelector) {
             $(slider.settings.pagerSelector).html(slider.pagerEl);
           } else {
+            
             // if no pager selector was supplied, add it after the wrapper
             slider.controls.el.addClass('bx-has-pager').append(slider.pagerEl);
           }
+          
           // populate the pager
           populatePager();
         } else {
           slider.pagerEl = $(slider.settings.pagerCustom);
         }
+        
         // assign the pager click binding
         slider.pagerEl.on('click', 'a', clickPagerBind);
       };

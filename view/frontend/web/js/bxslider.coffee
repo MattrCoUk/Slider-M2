@@ -12,7 +12,11 @@ jQuery(document).ready ($) ->
    plugin = {}
    defaults =
 
-# GENERAL
+   # Some settings are supplied via CMS
+
+   # DEFAULTS
+   
+   # GENERAL
       mode:                      'vertical'
       slideSelector:             ''
       infiniteLoop:              false
@@ -22,7 +26,7 @@ jQuery(document).ready ($) ->
       slideMargin:               0
       startSlide:                0
       randomStart:               false
-      captions:                  false
+      captions:                  true
       ticker:                    false
       tickerHover:               false
       adaptiveHeight:            false
@@ -34,14 +38,14 @@ jQuery(document).ready ($) ->
       slideZIndex:               50
       wrapperClass:              'bx-wrapper'
 
-# TOUCH
+      # TOUCH
       touchEnabled:              false
       swipeThreshold:            50
       oneToOneTouch:             true
       preventDefaultSwipeX:      true
       preventDefaultSwipeY:      false
 
-# PAGER
+      # PAGER
       pager:                     true
       pagerType:                 'full'
       pagerShortSeparator:       ' / '
@@ -49,8 +53,8 @@ jQuery(document).ready ($) ->
       buildPager:                null
       pagerCustom:               null
 
-# CONTROLS
-      controls:                  false
+      # CONTROLS
+      controls:                  true
       nextText:                  'Next'
       prevText:                  'Prev'
       nextSelector:              null
@@ -61,7 +65,7 @@ jQuery(document).ready ($) ->
       autoControlsCombine:       false
       autoControlsSelector:      null
 
-# AUTO
+      # AUTO
       auto:                      false
       pause:                     8000
       autoStart:                 true
@@ -70,7 +74,7 @@ jQuery(document).ready ($) ->
       autoDelay:                 0
       autoSlideForOnePage:       false
 
-# CAROUSEL
+      # CAROUSEL
       minSlides:                 1
       maxSlides:                 1
       moveSlides:                0
@@ -118,42 +122,55 @@ jQuery(document).ready ($) ->
       # # #
       
       init = ->
-# merge user-supplied options with the defaults
+         # merge user-supplied options with the defaults
          slider.settings = $.extend({}, defaults, options)
+         
          # parse slideWidth setting
          slider.settings.slideWidth = parseInt(slider.settings.slideWidth)
+         
          # store the original children
          slider.children = el.children(slider.settings.slideSelector)
+         
          # check if actual number of slides is less than minSlides / maxSlides
          if slider.children.length < slider.settings.minSlides
             slider.settings.minSlides = slider.children.length
          if slider.children.length < slider.settings.maxSlides
             slider.settings.maxSlides = slider.children.length
+         
          # if random start, set the startSlide setting to random number
          if slider.settings.randomStart
             slider.settings.startSlide = Math.floor(Math.random() * slider.children.length)
+         
          # store active slide information
          slider.active = index: slider.settings.startSlide
+         
          # store if the slider is in carousel mode (displaying / moving multiple slides)
          slider.carousel = slider.settings.minSlides > 1 or slider.settings.maxSlides > 1
+         
          # if carousel, force preloadImages = 'all'
          if slider.carousel
             slider.settings.preloadImages = 'all'
+         
          # calculate the min / max width thresholds based on min / max number of slides
          # used to setup and update carousel slides dimensions
          slider.minThreshold = slider.settings.minSlides * slider.settings.slideWidth + (slider.settings.minSlides - 1) * slider.settings.slideMargin
          slider.maxThreshold = slider.settings.maxSlides * slider.settings.slideWidth + (slider.settings.maxSlides - 1) * slider.settings.slideMargin
+         
          # store the current state of the slider (if currently animating, working is true)
          slider.working = false
+         
          # initialize the controls object
          slider.controls = {}
+         
          # initialize an auto interval
          slider.interval = null
+         
          # determine which property to use for transitions
          slider.animProp = if slider.settings.mode == 'vertical' then 'top' else 'left'
+         
          # determine if hardware acceleration can be used
          slider.usingCSS = slider.settings.useCSS and slider.settings.mode != 'fade' and do ->
-# create our test div element
+            # create our test div element
             div = document.createElement('div')
             # css transition properties
             props = [
@@ -169,14 +186,17 @@ jQuery(document).ready ($) ->
                   slider.animProp = '-' + slider.cssPrefix + '-transform'
                   return true
             false
+         
          # if vertical mode always make maxSlides and minSlides equal
          if slider.settings.mode == 'vertical'
             slider.settings.maxSlides = slider.settings.minSlides
+         
          # save original style data
          el.data 'origStyle', el.attr('style')
          el.children(slider.settings.slideSelector).each ->
             $(this).data 'origStyle', $(this).attr('style')
             return
+         
          # perform all DOM / CSS modifications
          setup()
          return
@@ -215,21 +235,21 @@ jQuery(document).ready ($) ->
          
          # make modifications to the viewport (.bx-viewport)
          slider.viewport.css
-            width: '100%'
-            overflow: 'hidden'
-            position: 'relative'
+            width:      '100%'
+            overflow:   'hidden'
+            position:   'relative'
          
          slider.viewport.parent().css maxWidth: getViewportMaxWidth()
          
-         # make modification to the wrapper (.bx-wrapper)
-         if !slider.settings.pager
-            slider.viewport.parent().css margin: '0 auto 0px'
+         # make modification to the wrapper (.bx-wrapper) -- disabled here, set in CSS
+         # if !slider.settings.pager
+         #    slider.viewport.parent().css margin: '0 auto 0px'
          
          # apply css to all slider children
          slider.children.css
             'float': if slider.settings.mode == 'horizontal' then 'left' else 'none'
-            listStyle: 'none'
-            position: 'relative'
+            listStyle:  'none'
+            position:   'relative'
          
          # apply the calculated width after the float is applied to prevent scrollbar interference
          slider.children.css 'width', getSlideWidth()
@@ -243,13 +263,13 @@ jQuery(document).ready ($) ->
          # if "fade" mode, add positioning and z-index CSS
          if slider.settings.mode == 'fade'
             slider.children.css
-               position: 'absolute'
-               zIndex: 0
-               display: 'none'
+               position:   'absolute'
+               zIndex:     0
+               display:    'none'
             # prepare the z-index on the showing element
             slider.children.eq(slider.settings.startSlide).css
                zIndex: slider.settings.slideZIndex
-               display: 'block'
+               display:    'block'
          
          # create an element to contain all slider controls (pager, start / stop, etc)
          slider.controls.el = $('<div class="bx-controls" />')
@@ -382,19 +402,19 @@ jQuery(document).ready ($) ->
          if slider.settings.mode != 'vertical' and !slider.settings.adaptiveHeight
             children = slider.children
          else
-# if not carousel, return the single active child
+            # if not carousel, return the single active child
             if !slider.carousel
                children = slider.children.eq(slider.active.index)
-# if carousel, return a slice of children
+            # if carousel, return a slice of children
             else
-# get the individual slide index
+               # get the individual slide index
                currentIndex = if slider.settings.moveSlides == 1 then slider.active.index else slider.active.index * getMoveBy()
                # add the current slide to the children
                children = slider.children.eq(currentIndex)
                # cycle through the remaining "showing" slides
                i = 1
                while i <= slider.settings.maxSlides - 1
-# if looped back to the start
+                  # if looped back to the start
                   if currentIndex + i >= slider.children.length
                      children = children.add(slider.children.eq(i - 1))
                   else
@@ -408,7 +428,7 @@ jQuery(document).ready ($) ->
             # add user-supplied margins
             if slider.settings.slideMargin > 0
                height += slider.settings.slideMargin * (slider.settings.minSlides - 1)
-# if not "vertical" mode, calculate the max height of the children
+         # if not "vertical" mode, calculate the max height of the children
          else
             height = Math.max.apply(Math, children.map(->
                $(this).outerHeight false
@@ -437,17 +457,17 @@ jQuery(document).ready ($) ->
       # # #
       
       getSlideWidth = ->
-# start with any user-supplied slide width
+         # start with any user-supplied slide width
          newElWidth = slider.settings.slideWidth
          # get the current viewport width
          wrapWidth = slider.viewport.width()
          # if slide width was not supplied, or is larger than the viewport use the viewport width
          if slider.settings.slideWidth == 0 or slider.settings.slideWidth > wrapWidth and !slider.carousel or slider.settings.mode == 'vertical'
             newElWidth = wrapWidth
-# if carousel, use the thresholds to determine the width
+         # if carousel, use the thresholds to determine the width
          else if slider.settings.maxSlides > 1 and slider.settings.mode == 'horizontal'
             if wrapWidth > slider.maxThreshold
-# newElWidth = (wrapWidth - (slider.settings.slideMargin * (slider.settings.maxSlides - 1))) / slider.settings.maxSlides;
+            # newElWidth = (wrapWidth - (slider.settings.slideMargin * (slider.settings.maxSlides - 1))) / slider.settings.maxSlides;
             else if wrapWidth < slider.minThreshold
                newElWidth = (wrapWidth - (slider.settings.slideMargin * (slider.settings.minSlides - 1))) / slider.settings.minSlides
          newElWidth
@@ -459,17 +479,17 @@ jQuery(document).ready ($) ->
       getNumberSlidesShowing = ->
          slidesShowing = 1
          if slider.settings.mode == 'horizontal' and slider.settings.slideWidth > 0
-# if viewport is smaller than minThreshold, return minSlides
+            # if viewport is smaller than minThreshold, return minSlides
             if slider.viewport.width() < slider.minThreshold
                slidesShowing = slider.settings.minSlides
-# if viewport is larger than minThreshold, return maxSlides
+            # if viewport is larger than minThreshold, return maxSlides
             else if slider.viewport.width() > slider.maxThreshold
                slidesShowing = slider.settings.maxSlides
-# if viewport is between min / max thresholds, divide viewport width by first child width
+            # if viewport is between min / max thresholds, divide viewport width by first child width
             else
                childWidth = slider.children.first().width() + slider.settings.slideMargin
                slidesShowing = Math.floor((slider.viewport.width() + slider.settings.slideMargin) / childWidth)
-# if "vertical" mode, slides showing will always be minSlides
+         # if "vertical" mode, slides showing will always be minSlides
          else if slider.settings.mode == 'vertical'
             slidesShowing = slider.settings.minSlides
          slidesShowing
@@ -485,7 +505,7 @@ jQuery(document).ready ($) ->
             if slider.settings.infiniteLoop
                pagerQty = Math.ceil(slider.children.length / getMoveBy())
             else
-# use a while loop to determine pages
+               # use a while loop to determine pages
                breakPoint = 0
                counter = 0
                # when breakpoint goes above children length, counter is the number of pages
@@ -493,7 +513,7 @@ jQuery(document).ready ($) ->
                   ++pagerQty
                   breakPoint = counter + getNumberSlidesShowing()
                   counter += if slider.settings.moveSlides <= getNumberSlidesShowing() then slider.settings.moveSlides else getNumberSlidesShowing()
-# if moveSlides is 0 (auto) divide children length by sides showing, then round up
+         # if moveSlides is 0 (auto) divide children length by sides showing, then round up
          else
             pagerQty = Math.ceil(slider.children.length / getNumberSlidesShowing())
          pagerQty
@@ -503,7 +523,7 @@ jQuery(document).ready ($) ->
       # # #
       
       getMoveBy = ->
-# if moveSlides was set by the user and moveSlides is less than number of slides showing
+         # if moveSlides was set by the user and moveSlides is less than number of slides showing
          if slider.settings.moveSlides > 0 and slider.settings.moveSlides <= getNumberSlidesShowing()
             return slider.settings.moveSlides
          # if moveSlides is 0 (auto)
@@ -514,25 +534,23 @@ jQuery(document).ready ($) ->
       # # #
       
       setSlidePosition = ->
-         `var position`
-         `var position`
          # if last slide, not infinite loop, and number of children is larger than specified maxSlides
          if slider.children.length > slider.settings.maxSlides and slider.active.last and !slider.settings.infiniteLoop
             if slider.settings.mode == 'horizontal'
-# get the last child's position
+               # get the last child's position
                lastChild = slider.children.last()
                position = lastChild.position()
                # set the left position
                setPositionProperty -(position.left - (slider.viewport.width() - lastChild.outerWidth())), 'reset', 0
             else if slider.settings.mode == 'vertical'
-# get the last showing index's position
+               # get the last showing index's position
                lastShowingIndex = slider.children.length - (slider.settings.minSlides)
                position = slider.children.eq(lastShowingIndex).position()
                # set the top position
                setPositionProperty -position.top, 'reset', 0
-# if not last slide
+         # if not last slide
          else
-# get the position of the first showing slide
+            # get the position of the first showing slide
             position = slider.children.eq(slider.active.index * getMoveBy()).position()
             # check for last slide
             if slider.active.index == getPagerQty() - 1
@@ -563,37 +581,37 @@ jQuery(document).ready ($) ->
       # # #
       
       setPositionProperty = (value, type, duration, params) ->
-# use CSS transform
+         # use CSS transform
          if slider.usingCSS
-# determine the translate3d value
+            # determine the translate3d value
             propValue = if slider.settings.mode == 'vertical' then 'translate3d(0, ' + value + 'px, 0)' else 'translate3d(' + value + 'px, 0, 0)'
             # add the CSS transition-duration
             el.css '-' + slider.cssPrefix + '-transition-duration', duration / 1000 + 's'
             if type == 'slide'
-# set the property value
+               # set the property value
                el.css slider.animProp, propValue
                # bind a callback method - executes when CSS transition completes
                el.bind 'transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', ->
-# unbind the callback
+                  # unbind the callback
                   el.unbind 'transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd'
                   updateAfterSlideTransition()
                   return
             else if type == 'reset'
                el.css slider.animProp, propValue
             else if type == 'ticker'
-# make the transition use 'linear'
+               # make the transition use 'linear'
                el.css '-' + slider.cssPrefix + '-transition-timing-function', 'linear'
                el.css slider.animProp, propValue
                # bind a callback method - executes when CSS transition completes
                el.bind 'transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', ->
-# unbind the callback
+                  # unbind the callback
                   el.unbind 'transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd'
                   # reset the position
                   setPositionProperty params['resetValue'], 'reset', 0
                   # start the loop again
                   tickerLoop()
                   return
-# use JS animate
+         # use JS animate
          else
             animateObj = {}
             animateObj[slider.animProp] = value
@@ -642,19 +660,25 @@ jQuery(document).ready ($) ->
       # # #
       
       appendPager = ->
+         
          if !slider.settings.pagerCustom
-# create the pager DOM element
+            
+            # create the pager DOM element
             slider.pagerEl = $('<div class="bx-pager" />')
+            
             # if a pager selector was supplied, populate it with the pager
             if slider.settings.pagerSelector
                $(slider.settings.pagerSelector).html slider.pagerEl
-# if no pager selector was supplied, add it after the wrapper
+            
+               # if no pager selector was supplied, add it after the wrapper
             else
                slider.controls.el.addClass('bx-has-pager').append slider.pagerEl
+            
             # populate the pager
             populatePager()
          else
             slider.pagerEl = $(slider.settings.pagerCustom)
+         
          # assign the pager click binding
          slider.pagerEl.on 'click', 'a', clickPagerBind
          return
@@ -664,6 +688,7 @@ jQuery(document).ready ($) ->
       # # #
       
       appendControls = ->
+         
          slider.controls.next = $('<a class="bx-next" href="">' + slider.settings.nextText + '</a>')
          slider.controls.prev = $('<a class="bx-prev" href="">' + slider.settings.prevText + '</a>')
          # bind click actions to the controls
@@ -677,7 +702,7 @@ jQuery(document).ready ($) ->
             $(slider.settings.prevSelector).append slider.controls.prev
          # if no custom selectors were supplied
          if !slider.settings.nextSelector and !slider.settings.prevSelector
-# add the controls to the DOM
+            # add the controls to the DOM
             slider.controls.directionEl = $('<div class="bx-controls-direction" />')
             # add the control elements to the directionEl
             slider.controls.directionEl.append(slider.controls.prev).append slider.controls.next
@@ -700,13 +725,13 @@ jQuery(document).ready ($) ->
          # if autoControlsCombine, insert only the "start" control
          if slider.settings.autoControlsCombine
             slider.controls.autoEl.append slider.controls.start
-# if autoControlsCombine is false, insert both controls
+         # if autoControlsCombine is false, insert both controls
          else
             slider.controls.autoEl.append(slider.controls.start).append slider.controls.stop
          # if auto controls selector was supplied, populate it with the controls
          if slider.settings.autoControlsSelector
             $(slider.settings.autoControlsSelector).html slider.controls.autoEl
-# if auto controls selector was not supplied, add it after the wrapper
+         # if auto controls selector was not supplied, add it after the wrapper
          else
             slider.controls.el.addClass('bx-has-controls-auto').append slider.controls.autoEl
          # update the auto controls
@@ -718,9 +743,9 @@ jQuery(document).ready ($) ->
       # # #
       
       appendCaptions = ->
-# cycle through each child
+         # cycle through each child
          slider.children.each (index) ->
-# get the image title attribute
+            # get the image title attribute
             title = $(this).find('img:first').attr('title')
             # append the caption
             if title != undefined and ('' + title).length
@@ -736,7 +761,7 @@ jQuery(document).ready ($) ->
       # # #
       
       clickNextBind = (e) ->
-# if auto show is running, stop it
+         # if auto show is running, stop it
          if slider.settings.auto
             el.stopAuto()
          el.goToNextSlide()
@@ -751,7 +776,7 @@ jQuery(document).ready ($) ->
       # # #
       
       clickPrevBind = (e) ->
-# if auto show is running, stop it
+         # if auto show is running, stop it
          if slider.settings.auto
             el.stopAuto()
          el.goToPrevSlide()
@@ -790,7 +815,7 @@ jQuery(document).ready ($) ->
       # # #
       
       clickPagerBind = (e) ->
-# if auto show is running, stop it
+         # if auto show is running, stop it
          if slider.settings.auto
             el.stopAuto()
          pagerLink = $(e.currentTarget)
@@ -810,7 +835,7 @@ jQuery(document).ready ($) ->
       # # #
       
       updatePagerActive = (slideIndex) ->
-# if "short" pager type
+         # if "short" pager type
          len = slider.children.length
          # nb of children
          if slider.settings.pagerType == 'short'
@@ -831,17 +856,17 @@ jQuery(document).ready ($) ->
       # # #
       
       updateAfterSlideTransition = ->
-# if infinte loop is true
+         # if infinte loop is true
          if slider.settings.infiniteLoop
             position = ''
             # first slide
             if slider.active.index == 0
-# set the new position
+               # set the new position
                position = slider.children.eq(0).position()
-# carousel, last slide
+            # carousel, last slide
             else if slider.active.index == getPagerQty() - 1 and slider.carousel
                position = slider.children.eq((getPagerQty() - 1) * getMoveBy()).position()
-# last slide
+            # last slide
             else if slider.active.index == slider.children.length - 1
                position = slider.children.eq(slider.children.length - 1).position()
             if position
