@@ -4,37 +4,34 @@ Slider Extension for Magento 2.x
 
 ## Installation (this fork)
 
-in `magento_project_dir/app/code/SY/Slider`
+`cd [__magento_project_dir__]`
 
+`mkdir -p app/code/SY/Slider; cd  app/code/SY/Slider`
+
+Options
+
+1. Using **HTTPS**  
+`git clone https://github.com/MattrCoUk/Slider-M2.git`
+
+2. or simply **[download](https://github.com/MattrCoUk/Slider-M2/archive/master.zip)** and unzip the repo in `[__magento_project_dir__]/app/code/SY/Slider ` 
+
+3. or **SSH** if planning to push to origin  
 `git clone git@github.com:MattrCoUk/Slider-M2.git .`
 
+then   
 
-(or simply download and unzip the repo)
-
-in `magento_project_dir`
-
-`bin/magento module:enable SY_Slider`
-
-`bin/magento setup:upgrade`
-
-`bin/magento cache:flush`
-
-
-
-### With Composer
-
-in `magento_project_dir`
-
-
-`composer config repositories.sy-slider vcs git@github.com:MattrCoUk/Slider-M2.git`
-
-`composer require sy/slider`
+`cd [__magento_project_dir__]`
 
 `bin/magento module:enable SY_Slider`
 
 `bin/magento setup:upgrade`
 
 `bin/magento cache:flush`
+
+**Coffe break mode**
+
+`cd [__magento_project_dir__]; bin/magento module:enable SY_Slider; bin/magento setup:upgrade; bin/magento cache:flush`
+
 
 
 ## Uninstallation
@@ -46,23 +43,9 @@ in `magento_project_dir`
 `rm -rf app/code/SY/Slider`
 
 
-Drop `sy_slider` table in database if you're planning to reinstall the SY_Slider as it might cause problems.
-
-
-`bin/magento setup:upgrade`
-
-`bin/magento cache:flush`
-
-
-
-### With Composer
-
-`bin/magento module:disable SY_Slider`
-
-`composer remove sy/slider`
-
-
-Drop `sy_slider` table in database if you're planning to reinstall the SY_Slider as it might cause problems.
+###Clear database
+Drop `schema.sy_slider` table.
+delete from `schema.setup_module where module ='SY_Slider';`
 
 
 `bin/magento setup:upgrade`
